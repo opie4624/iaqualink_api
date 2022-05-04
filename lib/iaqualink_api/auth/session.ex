@@ -17,7 +17,7 @@ defmodule IaqualinkApi.Auth.Session do
   end
 
   def renew_token do
-    new_expiration = 6000
+    new_expiration = 60_000
     Agent.update(__MODULE__, &Map.put(&1, "expiration", new_expiration))
     new_expiration
   end
@@ -37,7 +37,7 @@ defmodule IaqualinkApi.Auth.SessionUpdater do
   def poll(), do: poll(Session.get_expiration())
 
   def poll(renew_time) do
-    Logger.info("Renewing token in #{renew_time} seconds")
+    Logger.info("Renewing token in #{renew_time} milliseconds")
 
     receive do
     after
