@@ -8,7 +8,12 @@ defmodule IaqualinkApi.Auth.Session do
   end
 
   def get_expiration do
-    Agent.get(__MODULE__, &Map.get(&1, "expiration"))
+    case expiry = Agent.get(__MODULE__, &Map.get(&1, "expiration")) do
+      nil ->
+        renew_token()
+      _ ->
+        expiry
+    end
   end
 
   def renew_token do
