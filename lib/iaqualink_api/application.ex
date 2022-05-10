@@ -9,7 +9,8 @@ defmodule IaqualinkApi.Application do
   def start(_type, _args) do
     children = [
       IaqualinkApi.Auth.Session,
-      IaqualinkApi.Auth.SessionUpdater
+      IaqualinkApi.Auth.SessionUpdater,
+      {Finch, name: ApiFinch}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
