@@ -10,13 +10,9 @@ defmodule IaqualinkApi.Auth do
 
     headers = [{"content-type", "application/json"}]
 
-    request = Finch.build(
-      :post,
-      url,
-      headers,
-      payload
-    )
-
-    request
+    with {:ok, response} = Finch.build(:post, url, headers, Jason.encode!(payload))
+    |> Finch.request(ApiFinch),
+    {:ok, result} = Jason.decode(response.body),
+    do: {:ok, result}
   end
 end
