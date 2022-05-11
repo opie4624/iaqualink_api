@@ -1,4 +1,6 @@
 defmodule IaqualinkApi.Auth do
+  alias IaqualinkApi.Auth.Session
+
   def login do
     payload = %{
       "email" => Application.get_env(:iaqualink_api, :email),
@@ -10,17 +12,20 @@ defmodule IaqualinkApi.Auth do
 
     headers = [{"content-type", "application/json"}]
 
-    with {:ok, response} = Finch.build(:post, url, headers, Jason.encode!(payload))
-         |> Finch.request(ApiFinch),
-         {:ok, decoded} = Jason.decode(response.body),
-           do: %{
-             renewUrl: Map.get(decoded, "cognitoPool") |> Map.get("domain"),
-             clientId: Map.get(decoded, "cognitoPool") |> Map.get("appClientId"),
-             sessionToken: Map.get(decoded, "credentials") |> Map.get("SessionToken"),
-             accessToken: Map.get(decoded, "userPoolOAuth") |> Map.get("AccessToken"),
-             refreshToken: Map.get(decoded, "userPoolOAuth") |> Map.get("RefreshToken"),
-             idToken: Map.get(decoded, "userPoolOAuth") |> Map.get("IdToken"),
+    with {:ok, response} <-
+           Finch.build(:post, url, headers, Jason.encode!(payload))
+           |> Finch.request(ApiFinch),
+         {:ok, decoded} <- Jason.decode(response.body),
+         do:
+           %{
+             refresh_url: Map.get(decoded, "cognitoPool") |> Map.get("domain"),
+             client_id: Map.get(decoded, "cognitoPool") |> Map.get("appClientId"),
+             session_token: Map.get(decoded, "credentials") |> Map.get("SessionToken"),
+             access_token: Map.get(decoded, "userPoolOAuth") |> Map.get("AccessToken"),
+             refresh_token: Map.get(decoded, "userPoolOAuth") |> Map.get("RefreshToken"),
+             id_token: Map.get(decoded, "userPoolOAuth") |> Map.get("IdToken"),
              expires: Map.get(decoded, "userPoolOAuth") |> Map.get("ExpiresIn")
            }
+           |> Session.put_keys()
   end
 end
