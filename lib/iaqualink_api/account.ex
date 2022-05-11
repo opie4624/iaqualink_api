@@ -11,6 +11,16 @@ defmodule IaqualinkApi.Account do
     |> Map.get("session_id")
   end
 
+  def get_locations do
+    user_id = get_user_id()
+
+    with {:ok, response} <-
+           Finch.build(:get, make_url("users/#{user_id}/locations"), make_headers())
+           |> Finch.request(ApiFinch),
+         {:ok, decoded} <- Jason.decode(response.body),
+         do: Map.get(decoded, "locations")
+  end
+
   defp make_headers do
     id_token = Session.get(:id_token)
 
