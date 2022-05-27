@@ -1,7 +1,9 @@
 defmodule IaqualinkApi.Account do
   alias IaqualinkApi.Auth.Session
 
-  def get_user_id do
+  def get_user_id, do: Session.get(:user_id)
+
+  def get_session_user_id do
     get_session_info()
     |> Map.get("session_user_id")
   end
@@ -12,7 +14,7 @@ defmodule IaqualinkApi.Account do
   end
 
   def get_locations do
-    user_id = get_user_id()
+    user_id = get_session_user_id()
 
     with {:ok, response} <-
            Finch.build(:get, make_url("users/#{user_id}/locations"), make_headers())
