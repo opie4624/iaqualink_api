@@ -28,18 +28,21 @@ defmodule IaqualinkApi.Account do
     api_key = Application.get_env(:iaqualink_api, :api_key)
     auth_token = Session.get(:auth_token)
 
-    devices =
-      with {:ok, response} <-
-             Finch.build(
-               :get,
-               make_url(
-                 "devices.json?api_key=#{api_key}&authentication_token=#{auth_token}&user_id=#{user_id}",
-                 :r_api_url
-               )
+    with {:ok, response} <-
+           Finch.build(
+             :get,
+             make_url(
+               "devices.json?api_key=#{api_key}&authentication_token=#{auth_token}&user_id=#{user_id}",
+               :r_api_url
              )
-             |> Finch.request(ApiFinch),
-           {:ok, decoded} = Jason.decode(response.body),
-           do: decoded
+           )
+           |> Finch.request(ApiFinch),
+         {:ok, decoded} = Jason.decode(response.body),
+         do: decoded
+  end
+
+  def get_device_serials(devices) do
+    for %{"serial_number" => serial} <- devices, do: serial
   end
 
   defp make_headers do
