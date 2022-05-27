@@ -24,7 +24,9 @@ defmodule IaqualinkApi.Auth do
              access_token: Map.get(decoded, "userPoolOAuth") |> Map.get("AccessToken"),
              refresh_token: Map.get(decoded, "userPoolOAuth") |> Map.get("RefreshToken"),
              id_token: Map.get(decoded, "userPoolOAuth") |> Map.get("IdToken"),
-             expires: Map.get(decoded, "userPoolOAuth") |> Map.get("ExpiresIn")
+             expires: Map.get(decoded, "userPoolOAuth") |> Map.get("ExpiresIn"),
+             auth_token: Map.get(decoded, "authentication_token"),
+             user_id: Map.get(decoded, "id")
            }
            |> Session.put_keys()
   end
